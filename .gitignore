@@ -105,4 +105,4 @@ docs/_build/
 target/
 
 # Pin documentation
-Pin.docset/
+Pin.docset/Contents/Resources/
