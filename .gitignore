@@ -106,3 +106,5 @@ target/
 
 # Pin documentation
 Pin.docset/Contents/Resources/
+pin-*-mac.tar.gz
+test/
