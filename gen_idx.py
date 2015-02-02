@@ -11,6 +11,7 @@ import sqlite3
 
 
 def parse_search_data(path):
+    sub_dir = os.path.split(path)[1]
     search_dir = os.path.join(path, "search")
     js_files = [os.path.join(search_dir, file_name) for file_name in os.listdir(search_dir)
                 if file_name.endswith(".js") and file_name != "search.js" and file_name.startswith("all_") == False]
@@ -45,7 +46,7 @@ def parse_search_data(path):
             result = eval(line)
 
             name = result[1][0]
-            doc_path = result[1][1][0].replace("../", "./html/")
+            doc_path = result[1][1][0].replace("../", "./{0}/".format(sub_dir))
             keywords.append([name, current_type, doc_path])
 
     return keywords
