@@ -51,7 +51,20 @@ def parse_search_data(path):
     return keywords
 
 
-def init_pin_doc():
+def adjust_archive_name(file_path):
+    path, file_name = os.path.split(file_path)
+    if path[-6:] == "search":
+        file_name = os.path.join("search", file_name)
+    return file_name
+
+
+def main():
+    docset_dir = os.path.join(os.path.dirname(__file__), "Pin.docset")
+
+    pin_doc = os.path.join(docset_dir, "Contents", "Resources", "Documents", "pin")
+    xed32_doc = os.path.join(docset_dir, "Contents", "Resources", "Documents", "xed32")
+    xed64_doc = os.path.join(docset_dir, "Contents", "Resources", "Documents", "xed64")
+
     archive_path = os.path.join(os.path.dirname(__file__), "pin-2.14-67254-clang.5.1-mac.tar.gz")
     tar = tarfile.open(archive_path)
     pin_doc_files = []
@@ -59,48 +72,58 @@ def init_pin_doc():
     xed64_doc_files = []
     for tarinfo in tar.getmembers():
         if tarinfo.name.find("/doc/html") != -1:
-            tarinfo.name = os.path.basename(tarinfo.name)
+            tarinfo.name = adjust_archive_name(tarinfo.name)
             pin_doc_files.append(tarinfo)
+
         elif tarinfo.name.find("extras/xed2-ia32/doc/ref-manual/html") != -1:
-            tarinfo.name = os.path.basename(tarinfo.name)
+            tarinfo.name = adjust_archive_name(tarinfo.name)
             xed32_doc_files.append(tarinfo)
+
         elif tarinfo.name.find("extras/xed2-intel64/doc/ref-manual/html") != -1:
-            tarinfo.name = os.path.basename(tarinfo.name)
+            tarinfo.name = adjust_archive_name(tarinfo.name)
             xed64_doc_files.append(tarinfo)
 
-    output_path = os.path.join(os.path.dirname(__file__), "test", "pin")
-    tar.extractall(path=output_path, members=pin_doc_files)
-    output_path = os.path.join(os.path.dirname(__file__), "test", "xed32")
-    tar.extractall(path=output_path, members=xed32_doc_files)
-    output_path = os.path.join(os.path.dirname(__file__), "test", "xed64")
-    tar.extractall(path=output_path, members=xed64_doc_files)
-
+    tar.extractall(path=pin_doc, members=pin_doc_files)
+    tar.extractall(path=xed32_doc, members=xed32_doc_files)
+    tar.extractall(path=xed64_doc, members=xed64_doc_files)
     tar.close()
 
+    pin_keywords = parse_search_data(pin_doc)
+    xed32_keywords = parse_search_data(xed32_doc)
+    xed64_keywords = parse_search_data(xed64_doc)
 
-def main():
-    docset_dir = os.path.join(os.path.dirname(__file__), "Pin.docset")
-    doc_file_dir = os.path.join(docset_dir, "Contents", "Resources", "Documents", "html")
-    keywords = parse_search_data(doc_file_dir)
+    print "Pin Index: {0}".format(len(pin_keywords))
+    print "Xed32 Index: {0}".format(len(xed32_keywords))
+    print "Xed64 Index: {0}".format(len(xed64_keywords))
 
     dsidx_path = os.path.join(docset_dir, "Contents", "Resources", "docSet.dsidx")
 
     try:
+
         db = sqlite3.connect(dsidx_path)
         cur = db.cursor()
         cur.execute("DROP TABLE IF EXISTS searchIndex")
         cur.execute("CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);")
 
-        for key in keywords:
+        for key in pin_keywords:
             cur.execute("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?,?,?)",
                         (key[0], key[1], key[2]))
+
+        for key in xed32_keywords:
+            cur.execute("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?,?,?)",
+                        (key[0], key[1], key[2]))
+
+        for key in xed64_keywords:
+            cur.execute("INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?,?,?)",
+                        (key[0], key[1], key[2]))
+
         db.commit()
         db.close()
+
     except Exception as e:
         print e.message
         raise
 
 
 if __name__ == "__main__":
-    # main()
-    init_pin_doc()
+    main()
