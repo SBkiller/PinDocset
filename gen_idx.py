@@ -72,15 +72,15 @@ def main():
     xed32_doc_files = []
     xed64_doc_files = []
     for tarinfo in tar.getmembers():
-        if tarinfo.name.find("/doc/html") != -1:
+        if tarinfo.name.find("/doc/html/") != -1:
             tarinfo.name = adjust_archive_name(tarinfo.name)
             pin_doc_files.append(tarinfo)
 
-        elif tarinfo.name.find("extras/xed2-ia32/doc/ref-manual/html") != -1:
+        elif tarinfo.name.find("extras/xed2-ia32/doc/ref-manual/html/") != -1:
             tarinfo.name = adjust_archive_name(tarinfo.name)
             xed32_doc_files.append(tarinfo)
 
-        elif tarinfo.name.find("extras/xed2-intel64/doc/ref-manual/html") != -1:
+        elif tarinfo.name.find("extras/xed2-intel64/doc/ref-manual/html/") != -1:
             tarinfo.name = adjust_archive_name(tarinfo.name)
             xed64_doc_files.append(tarinfo)
 
@@ -124,6 +124,8 @@ def main():
     except Exception as e:
         print e.message
         raise
+
+    os.system("tar --exclude='.DS_Store' -cvzf Pin.tgz Pin.docset")
 
 
 if __name__ == "__main__":
