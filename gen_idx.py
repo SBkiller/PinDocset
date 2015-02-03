@@ -125,7 +125,7 @@ def main():
         print e.message
         raise
 
-    os.system("tar --exclude='.DS_Store' -cvzf Pin.tgz Pin.docset")
+    os.system("tar --exclude='.DS_Store' -cvzf Pin_Docset.tgz Pin.docset")
 
 
 if __name__ == "__main__":
