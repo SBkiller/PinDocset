@@ -1,7 +1,7 @@
 Pin Docset
 =======================
 
-This script will extract docs from the [pin][1] compiler kit and generate index for `pin`, `xed32` and `xed64`, then archive the docset for [Dash][2].
+This script will extract docs from the [pin][1] compiler kit and generate index for `pin`, `xed32` and `xed64`, then archive the docset for [Dash][3].
 
 #### Steps:
 * Clone this project.
