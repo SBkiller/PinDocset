@@ -27,7 +27,8 @@ def parse_search_data(path):
         "typedefs": "Type",
         "groups": "Entry",
         "enums": "Enum",
-        "pages": "Guide"
+        "pages": "Guide",
+        "defines": "Define"
     }
 
     for file_name in js_files:
